@@ -1,0 +1,72 @@
+# EIP-7702 Examples
+
+These examples demonstrate how to upgrade an EOA to a Smart Account with EIP-7702 and ERC-4337 User Operations. The scripts demo EOA upgrades and batch mints 2 NFTs, all in a single user operation.
+
+## Smart Accounts
+
+[Simple7702Account](https://docs.candide.dev/wallet/abstractionkit/simple-7702-account/) is a fully audited minimalist smart contract account that can be safely authorized by any EOA. It adds full support for major smart account features like batching and gas sponsorship.
+
+
+### Initilization
+
+```ts
+import { Simple7702Account } from "abstractionkit";
+
+// EOA public address
+const eoaDelegatorPublicAddress = "0xBdbc5FBC9cA8C3F514D073eC3de840Ac84FC6D31"; 
+
+const smartAccount = new Simple7702Account(eoaDelegatorPublicAddress);
+```
+
+### UserOperation creation
+
+```ts
+let userOperation = await smartAccount.createUserOperation(
+    [metaTransaction],
+    nodeUrl,
+    bundlerUrl,
+    {
+        eip7702Auth: { chainId }
+    }
+);
+```
+
+### Signing the Delegation Authorisation
+
+```ts
+userOperation.eip7702Auth = createAndSignEip7702DelegationAuthorization(
+    BigInt(userOperation.eip7702Auth.chainId),
+    userOperation.eip7702Auth.address,
+    BigInt(userOperation.eip7702Auth.nonce),
+    eoaDelegatorPrivateKey
+)
+```
+
+## Gas Sponsorship with Paymaster
+
+Reference for [Candide's Paymaster](https://docs.candide.dev/wallet/abstractionkit/paymaster/).
+
+```ts
+import { CandidePaymaster } from "abstractionkit";
+
+const paymaster = new CandidePaymaster(paymasterUrl);
+```
+
+### Sponsorship using Policies
+
+```ts
+const [sponsorUserOp, _sponsorMetadata] = await paymaster.createSponsorPaymasterUserOperation( userOperation, bundlerUrl)
+
+userOperation = sponsorUserOp
+```
+
+### Gas Payments in ERC-20
+
+```ts
+userOperation = await paymaster.createTokenPaymasterUserOperation(
+    smartAccount,
+    userOperation,
+    tokenAddress,
+    bundlerUrl,
+)
+```

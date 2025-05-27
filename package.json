@@ -1,0 +1,21 @@
+{
+  "name": "abstractionkit-examples",
+  "version": "1.0.0",
+  "description": "This repo provides examples on how to use abstractionkit library by Candide",
+  "scripts": {
+    "build": "rimraf dist && tsc",
+    "clean": "rimraf dist",
+    "format": "prettier --write src/**/*.ts",
+    "lint": "eslint src/**/*.ts"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "abstractionkit": "^0.2.19",
+    "cbor": "^10.0.3",
+    "dotenv": "^16.5.0"
+  },
+  "devDependencies": {
+    "rimraf": "^5.0.10",
+    "typescript": "^5.8.3"
+  }
+}
