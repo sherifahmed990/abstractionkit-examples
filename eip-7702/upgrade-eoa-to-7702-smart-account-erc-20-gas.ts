@@ -17,7 +17,7 @@ async function main(): Promise<void> {
     const eoaDelegatorPublicAddress = process.env.PUBLIC_ADDRESS as string
     const eoaDelegatorPrivateKey = process.env.PRIVATE_KEY as string
     const paymasterUrl = process.env.PAYMASTER_URL as string;
-    const paymasterTokenAddress = process.env.PAYMASTER_TOKEN_ADDRESS as string;
+    const paymasterTokenAddress = process.env.TOKEN_ADDRESS as string;
 
     // initiate the smart account
     const smartAccount = new Simple7702Account(eoaDelegatorPublicAddress);
@@ -67,7 +67,7 @@ async function main(): Promise<void> {
     
     const paymaster = new CandidePaymaster(paymasterUrl);
 
-    const tokensSupported = await paymaster.fetchSupportedERC20TokensAndPaymasterMetadata();
+    const tokensSupported = await paymaster.fetchSupportedERC20TokensAndPaymasterMetadata(Simple7702Account.DEFAULT_ENTRYPOINT_ADDRESS);
     const tokenSelected = tokensSupported.tokens.find(token => token.address.toLocaleLowerCase() === paymasterTokenAddress.toLowerCase());
 
     console.log("This example uses Candide Token Paymaster");

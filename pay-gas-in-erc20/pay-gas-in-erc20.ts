@@ -17,7 +17,7 @@ async function main(): Promise<void> {
     const ownerPublicAddress = process.env.PUBLIC_ADDRESS as string
     const ownerPrivateKey = process.env.PRIVATE_KEY as string
     const paymasterUrl = process.env.PAYMASTER_URL as string;
-    const paymasterTokenAddress = process.env.PAYMASTER_TOKEN_ADDRESS as string;
+    const paymasterTokenAddress = process.env.TOKEN_ADDRESS as string;
 
     //initializeNewAccount only needed when the smart account
     //have not been deployed yet for its first useroperation.
@@ -78,7 +78,7 @@ async function main(): Promise<void> {
 
     const paymaster = new CandidePaymaster(paymasterUrl)
 
-    const tokensSupported = await paymaster.fetchSupportedERC20TokensAndPaymasterMetadata();
+    const tokensSupported = await paymaster.fetchSupportedERC20TokensAndPaymasterMetadata(SafeAccount.DEFAULT_ENTRYPOINT_ADDRESS);
     const tokenSelected = tokensSupported.tokens.find(token => token.address.toLocaleLowerCase() === paymasterTokenAddress.toLowerCase());
 
     console.log("This example uses Candide Token Paymaster");
