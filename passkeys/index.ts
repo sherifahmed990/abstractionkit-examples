@@ -19,6 +19,12 @@ import {
   extractSignature
 } from './webauthn';
 
+// safe passkeys v0.2.1
+const webAuthnSharedSigner = "0x94a4F6affBd8975951142c3999aEAB7ecee555c2";
+const webAuthnSignerFactory = "0x1d31F259eE307358a26dFb23EB365939E8641195";
+const webAuthnSignerSingleton = "0x4E27b51350e6c2083EE19011120F50DAfEc5CA50";
+const eip7212WebAuthnContractVerifier = "0xA86e0054C51E4894D88762a017ECc5E5235f5DBA";
+
 async function main(): Promise<void> {
   //get values from .env
   dotenv.config()
@@ -60,7 +66,11 @@ async function main(): Promise<void> {
   //You can store the accountAddress to use it to initialize 
   //the SafeAccount object for the following useroperations
   let smartAccount = SafeAccount.initializeNewAccount(
-    [webauthPublicKey]
+    [webauthPublicKey],
+    {
+      webAuthnSharedSigner,
+      eip7212WebAuthnContractVerifierForSharedSigner: eip7212WebAuthnContractVerifier,
+    }
   )
 
   //After the account contract is deployed, no need to call initializeNewAccount
@@ -102,6 +112,10 @@ async function main(): Promise<void> {
     bundlerUrl, //the bundler rpc is used to estimate the gas limits.
     {
       expectedSigners: [webauthPublicKey],
+      webAuthnSharedSigner,
+      webAuthnSignerFactory,
+      webAuthnSignerSingleton,
+      eip7212WebAuthnContractVerifier,
     }
   )
 
@@ -146,7 +160,13 @@ async function main(): Promise<void> {
 
   userOperation.signature = SafeAccount.formatSignaturesToUseroperationSignature(
     [SignerSignaturePair],
-    { isInit: userOperation.nonce == 0n }
+    {
+      isInit: userOperation.nonce == 0n,
+      webAuthnSharedSigner,
+      webAuthnSignerFactory,
+      webAuthnSignerSingleton,
+      eip7212WebAuthnContractVerifier,
+    }
   )
 
   //use the bundler rpc to send a userOperation
